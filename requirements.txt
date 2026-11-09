@@ -1,5 +1,7 @@
 streamlit
 pandas
 numpy
-FinanceDataReader
+finance-datareader
 plotly
+lxml
+requests
