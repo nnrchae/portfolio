@@ -79,44 +79,57 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.title("💼 프리미엄 자산관리 및 5대 지표 복합 분석 터미널")
-st.markdown(f"**📅 기준일:** {datetime.now().strftime('%Y-%m-%d')} &nbsp;|&nbsp; **🎯 운용 목표:** 7년 내 순자산 2배 증식 & 최신 잔고 기본 고정")
+st.markdown(f"**📅 기준일:** {datetime.now().strftime('%Y-%m-%d')} &nbsp;|&nbsp; **🎯 운용 목표:** 7년 내 순자산 2배 증식 & 탭 구분 잔고 완벽 파싱")
 st.markdown("<hr style='border: 1px solid #dcd7d0; margin-top: 10px; margin-bottom: 25px;'>", unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# 1. [동적 데이터 입력 레이어] 최신 잔고 데이터 기본 고정
+# 1. [동적 데이터 입력 레이어] 최신 잔고 데이터 고정 (탭 구분 완벽 지원)
 # ---------------------------------------------------------
 st.markdown("### 📥 실시간 자산 현황 데이터 입력")
-st.markdown("아래 입력창에 최신 잔고 데이터가 기본으로 반영되어 있습니다. 필요시 수정하여 사용할 수 있습니다.")
+st.markdown("증권사 HTS/MTS에서 복사한 잔고 표를 그대로 붙여넣으세요. 탭 공백 및 누락된 필드를 안전하게 파싱합니다.")
 
-default_raw_data = """예수금 340-375-915-01 예수금 154,079,041
-예수금 363-810-976-01 예수금 345,478
-예수금 376-640-119-01 예수금 1,881,569
-주식 340-375-915-01 SK하이닉스 -38.17 -6,988,810 10 18,308,810 11,320,000
-주식 340-375-915-01 삼성전자 -22.5 -16,442,530 300 243,508 73,052,530 56,610,000
-주식 363-810-976-01 TIGER 미국배당다우존스타겟데일리커버드콜 -2.22 -830,885 3,683 10,161 37,421,490 36,590,605
-주식 376-640-119-01 TIGER 미국배당다우존스타겟데일리커버드콜 -5.24 -390,760 711 10,485 7,454,545 7,063,785
-주식 376-640-119-01 SOL AI반도체TOP2플러스 -54.53 -70,110,364 5,000 25,712 128,560,364 58,450,000
-퇴직연금 870-126-269-01 TIGER 미국배당다우존스타겟데일리커버드콜 -2.21 -225 10 10,160 9,935
-퇴직연금 870-126-269-01 PLUS 코스피50 -37.76 -963,395 270 2,551,400 1,588,005
-퇴직연금 870-126-269-01 TIGER 미국배당다우존스타겟데일리커버드콜 1.08 533,360 5,011 9,828 49,250,925 49,784,285
-퇴직연금 870-126-269-01 TIGER 200 -8.97 -620,740 800 8,646 6,917,140 6,296,400
-퇴직연금 870-126-269-01 ACE KRX금현물 -22.23 -704,660 100 31,702 3,170,160 2,465,500
-퇴직연금 870-126-269-01 SOL AI반도체TOP2플러스 -47.61 -57,708,530 5,433 22,312 121,220,300 63,511,770
-퇴직연금 870-126-269-01 PLUS 코스피50 -38.53 -18,429,195 5,000 9,567 47,836,695 29,407,500
-퇴직연금 870-126-269-01 ACE 미국30년국채액티브 2.45 20,960 1,000 855 854,540 875,500
-퇴직연금 870-126-269-01 현금자산 0 0 72,311,119 72,311,119"""
+default_raw_data = """구분	계좌번호	종목명	손익률	평가손익	잔고수량	매입단가	매입금액	평가금액	대출금액	평가비중
+예수금	340-375-915-01		0	0	0	0	0	154,079,041	0	27.86%
+예수금	363-810-976-01		0	0	0	0	0	345,478	0	0.06%
+예수금	376-640-119-01		0	0	0	0	0	1,881,569	0	0.34%
+주식	340-375-915-01	SK하이닉스	-37.95	-6,948,810	10	1,830,881.00	18,308,810	11,360,000	0	2.05%
+주식	340-375-915-01	삼성전자	-22.01	-16,082,530	300	243,508.00	73,052,530	56,970,000	0	10.30%
+주식	363-810-976-01	TIGER 미국배당다우존스타겟데일리커버드콜	-2.46	-922,960	3,683	10,161.00	37,421,490	36,498,530	0	6.60%
+주식	376-640-119-01	TIGER 미국배당다우존스타겟데일리커버드콜	-5.48	-408,535	711	10,485.00	7,454,545	7,046,010	0	1.27%
+주식	376-640-119-01	SOL AI반도체TOP2플러스	-54.3	-69,810,364	5,000	25,712.00	128,560,364	58,750,000	0	10.62%
+퇴직연금	870-126-269-01	TIGER 미국배당다우존스타겟데일리커버드콜	-2.46	-250	1	0	10,160	9,910	0	0%
+퇴직연금	870-126-269-01	PLUS 코스피50	-38.63	-985,670	27	0	2,551,400	1,565,730	0	0.28%
+퇴직연금	870-126-269-01	TIGER 미국배당다우존스타겟데일리커버드콜	0.83	408,085	5,011	0	49,250,925	49,659,010	0	8.98%
+퇴직연금	870-126-269-01	TIGER 200	-9.48	-655,540	80	0	6,917,140	6,261,600	0	1.13%
+퇴직연금	870-126-269-01	ACE KRX금현물	-21.53	-682,660	100	0	3,170,160	2,487,500	0	0.44%
+퇴직연금	870-126-269-01	SOL AI반도체TOP2플러스	-47.34	-57,382,550	5,433	0	121,220,300	63,837,750	0	11.54%
+퇴직연금	870-126-269-01	PLUS 코스피50	-39.39	-18,841,695	500	0	47,836,695	28,995,000	0	5.24%
+퇴직연금	870-126-269-01	ACE 미국30년국채액티브	1.75	14,960	100	0	854,540	869,500	0	0.15%
+퇴직연금	870-126-269-01	현금자산	0	0	72,328,871	0	72,328,871	72,328,871	0	13.08%"""
 
-user_raw_input = st.text_area("📋 자산 현황 텍스트 (기본 고정됨):", value=default_raw_data, height=150)
+user_raw_input = st.text_area("📋 자산 현황 텍스트 (탭 구분 지원):", value=default_raw_data, height=180)
 
 def parse_user_asset_text(raw_text):
     lines = raw_text.strip().split("\n")
     parsed_rows = []
+    
     for line in lines:
-        if not line.strip() or ("구분" in line and "종목명" in line): continue
-        tokens = line.strip().split()
+        if not line.strip(): continue
+        # 탭(\t) 또는 공백 기준으로 토큰 분리
+        tokens = [t.strip() for t in line.split('\t') if t.strip()]
+        if len(tokens) < 2:
+            # 탭이 아니라 일반 공백으로 구분된 경우 대비
+            tokens = line.strip().split()
         if len(tokens) < 2: continue
+        
+        # 첫 번째 토큰이 구분(예수금, 주식, 퇴직연금)인지 확인
+        if tokens[0] not in ["예수금", "주식", "퇴직연금"]:
+            # 헤더이거나 다른 형태인 경우 건너뜀
+            if "구분" in tokens[0] or "종목명" in line: continue
+            
         gubun = tokens[0]
         
+        # 계좌번호 패턴 찾기 (OOO-OO...)
         account = "기타계좌"
         acc_idx = -1
         for i, t in enumerate(tokens):
@@ -124,54 +137,125 @@ def parse_user_asset_text(raw_text):
                 account = t
                 acc_idx = i
                 break
+                
         if acc_idx == -1: continue
         
-        remainder_tokens = tokens[acc_idx+1:]
-        stock_name_parts, numeric_tokens = [], []
-        is_numeric_started = False
-        for t in remainder_tokens:
+        # 계좌번호 뒤쪽부터 끝까지 토큰 추출
+        remainder = tokens[acc_idx+1:]
+        if not remainder: continue
+        
+        # 뒤에서부터 숫자형태인 것들을 파싱 (평가금액, 매입금액 등)
+        # 엑셀/HTS 복사 표 구조상 뒤에서 2번째 또는 3번째가 금액임
+        numeric_vals = []
+        stock_name_tokens = []
+        
+        for t in remainder:
             clean_t = t.replace(',', '').replace('%', '')
+            # 음수나 소수점이 포함된 숫자 체크
+            if re.match(r'^-?\d+(\.\d+)?$', clean_t):
+                numeric_vals.append(float(clean_t))
+            else:
+                stock_name_tokens.append(t)
+                
+        stock_name = " ".join(stock_name_tokens) if stock_name_tokens else "현금성자산"
+        if "예수금" in gubun or not stock_name_tokens:
+            stock_name = "예수금/현금"
+            
+        eval_amount = 0.0
+        buy_amount = 0.0
+        
+        # 숫자 목록에서 의미 있는 금액 추출 (보통 평가금액이 마지막에서 두번째 혹은 세번째에 위치)
+        # 정확한 파싱을 위해 콤마가 포함된 원래 문자열을 찾거나 숫자 배열 활용
+        raw_numbers = re.findall(r'-?[\d,]+\.?\d*', line)
+        clean_nums = []
+        for rn in raw_numbers:
+            val_str = rn.replace(',', '')
             try:
-                float(clean_t)
-                is_numeric_started = True
-                numeric_tokens.append(clean_t)
+                clean_nums.append(float(val_str))
             except ValueError:
-                if not is_numeric_started: stock_name_parts.append(t)
-                else: numeric_tokens.append(clean_t)
-                    
-        stock_name = " ".join(stock_name_parts) if stock_name_parts else "현금성자산"
-        if "예수금" in gubun or not stock_name_parts: stock_name = "예수금/현금"
+                pass
+                
+        if len(clean_nums) >= 2:
+            eval_amount = clean_nums[-2] # 뒤에서 두번째가 평가금액인 경우가 많음
+            buy_amount = clean_nums[-3] if len(clean_nums) >= 3 else eval_amount
+            # 만약 마지막 데이터(평가비중이나 대출금액 등) 때문에 밀린다면 조정
+            for cn in reversed(clean_nums):
+                if cn > 10000: # 1만원 이상인 숫자는 자산 금액일 확률이 높음
+                    eval_amount = cn
+                    break
+        elif len(clean_nums) == 1:
+            eval_amount = clean_nums[0]
+            buy_amount = eval_amount
             
-        float_nums = [float(nt) for nt in numeric_tokens if nt.replace('.','',1).isdigit() or (nt.startswith('-') and nt[1:].replace('.','',1).isdigit())]
-        eval_amount = float_nums[-1] if len(float_nums) >= 1 else 0.0
-        buy_amount = float_nums[-2] if len(float_nums) >= 2 else eval_amount
-            
+        # 좀 더 안전하게: 텍스트 내에서 가장 큰 금액대나 명확한 위치의 금액 매칭
+        # 사용자가 제공한 표 구조: 구분 | 계좌번호 | 종목명 | 손익률 | 평가손익 | 잔고수량 | 매입단가 | 매입금액 | 평가금액 | 대출금액 | 평가비중
+        if len(tokens) >= 9:
+            try:
+                # 뒤에서 3번째 혹은 4번째가 평가금액/매입금액
+                # 안전하게 숫자형 토큰들 중 큰 값들을 매입금액/평가금액으로 할당
+                pass
+            except Exception:
+                pass
+
+        # 위 구문보다 확실한 텍스트 패턴 매칭으로 재보정
+        # 숫자만 추출해서 뒤에서 2번째를 평가금액, 3번째를 매입금액으로 지정
+        all_floats = []
+        for t in tokens[acc_idx+1:]:
+            t_clean = t.replace(',', '').replace('%', '')
+            try:
+                all_floats.append(float(t_clean))
+            except ValueError:
+                pass
+                
+        if len(all_floats) >= 2:
+            # 뒤에서 2번째 혹은 대형 금액을 평가금액으로 설정
+            amounts = [f for f in all_floats if f > 1000] # 1천원 이상인 실질 금액들
+            if amounts:
+                eval_amount = amounts[-1]
+                buy_amount = amounts[-2] if len(amounts) >= 2 else eval_amount
+            else:
+                eval_amount = all_floats[-1]
+                buy_amount = all_floats[-2] if len(all_floats) >= 2 else eval_amount
+        elif len(all_floats) == 1:
+            eval_amount = all_floats[0]
+            buy_amount = eval_amount
+
         account_label = "위탁계좌" if "340" in account or "363" in account or "376" in account else "퇴직연금(870)"
         
-        if "예수금" in gubun or "현금" in stock_name: asset_group = "현금"
-        elif "반도체" in stock_name or "삼성" in stock_name or "하이닉스" in stock_name: asset_group = "반도체"
-        elif "미국배당" in stock_name: asset_group = "미국배당"
-        elif "코스피" in stock_name or "200" in stock_name: asset_group = "국내지수"
-        else: asset_group = "대체/채권"
+        if "예수금" in gubun or "현금" in stock_name:
+            asset_group = "현금"
+        elif "반도체" in stock_name or "삼성" in stock_name or "하이닉스" in stock_name:
+            asset_group = "반도체"
+        elif "미국배당" in stock_name:
+            asset_group = "미국배당"
+        elif "코스피" in stock_name or "200" in stock_name:
+            asset_group = "국내지수"
+        else:
+            asset_group = "대체/채권"
             
         is_irp_risk = True if "퇴직연금" in account_label and asset_group not in ["현금", "대체/채권"] else False
 
         parsed_rows.append({
             "계좌": account_label,
             "구분": asset_group,
-            "종목명": stock_name,
+            "종목명": stock_name if stock_name else "현금/예수금",
             "매입금액": buy_amount if buy_amount > 0 else eval_amount,
-            "평가금액": eval_amount,
+            "평가금액": eval_amount if eval_amount > 0 else buy_amount,
             "연금위험자산": is_irp_risk
         })
+
     return pd.DataFrame(parsed_rows)
 
 df_port = parse_user_asset_text(user_raw_input)
 if df_port.empty or df_port["평가금액"].sum() == 0:
-    st.warning("⚠️ 입력된 텍스트에서 자산 데이터를 읽어오지 못했습니다.")
+    st.warning("⚠️ 입력된 텍스트에서 자산 데이터를 읽어오지 못했습니다. 탭 구조를 확인해 주세요.")
     st.stop()
 
 total_asset = df_port["평가금액"].sum()
+
+# 파싱된 데이터 검증용 아코디언
+with st.expander("🔍 파싱된 실시간 자산 내역 확인 (클릭)"):
+    st.dataframe(df_port, use_container_width=True)
 
 # ---------------------------------------------------------
 # 2. [기술적 분석 데이터 연동]
