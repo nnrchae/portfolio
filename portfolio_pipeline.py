@@ -79,14 +79,14 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.title("💼 프리미엄 자산관리 및 5대 지표 복합 분석 터미널")
-st.markdown(f"**📅 기준일:** {datetime.now().strftime('%Y-%m-%d')} &nbsp;|&nbsp; **🎯 운용 목표:** 7년 내 순자산 2배 증식 & 실시간 슬라이더 연동 리밸런싱")
+st.markdown(f"**📅 기준일:** {datetime.now().strftime('%Y-%m-%d')} &nbsp;|&nbsp; **🎯 운용 목표:** 7년 내 순자산 2배 증식 & 최신 잔고 기본 고정")
 st.markdown("<hr style='border: 1px solid #dcd7d0; margin-top: 10px; margin-bottom: 25px;'>", unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# 1. [동적 데이터 입력 레이어] 자산 현황 텍스트 파싱
+# 1. [동적 데이터 입력 레이어] 최신 잔고 데이터 기본 고정
 # ---------------------------------------------------------
 st.markdown("### 📥 실시간 자산 현황 데이터 입력")
-st.markdown("증권사 앱이나 HTS에서 복사한 잔고 텍스트를 아래에 붙여넣으세요.")
+st.markdown("아래 입력창에 최신 잔고 데이터가 기본으로 반영되어 있습니다. 필요시 수정하여 사용할 수 있습니다.")
 
 default_raw_data = """예수금 340-375-915-01 예수금 154,079,041
 예수금 363-810-976-01 예수금 345,478
@@ -106,7 +106,7 @@ default_raw_data = """예수금 340-375-915-01 예수금 154,079,041
 퇴직연금 870-126-269-01 ACE 미국30년국채액티브 2.45 20,960 1,000 855 854,540 875,500
 퇴직연금 870-126-269-01 현금자산 0 0 72,311,119 72,311,119"""
 
-user_raw_input = st.text_area("📋 자산 현황 텍스트를 붙여넣으세요:", value=default_raw_data, height=150)
+user_raw_input = st.text_area("📋 자산 현황 텍스트 (기본 고정됨):", value=default_raw_data, height=150)
 
 def parse_user_asset_text(raw_text):
     lines = raw_text.strip().split("\n")
